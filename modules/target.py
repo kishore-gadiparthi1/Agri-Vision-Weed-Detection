@@ -1,16 +1,12 @@
 def get_targets(detections, image_width, image_height):
+    """Convert YOLO bounding boxes into camera-relative target positions.
     """
-    Convert YOLO bounding boxes into
-    camera-relative target positions.
-    """
-
     camera_center_x = image_width / 2
     camera_center_y = image_height / 2
 
     targets = []
 
     for i, detection in enumerate(detections):
-
         x1 = detection["x1"]
         y1 = detection["y1"]
         x2 = detection["x2"]
@@ -56,19 +52,21 @@ def get_targets(detections, image_width, image_height):
         else:
             vertical = "UP"
 
-        targets.append({
-            "weed": i + 1,
-            "confidence": detection["confidence"],
-            "x1": round(x1, 1),
-            "y1": round(y1, 1),
-            "x2": round(x2, 1),
-            "y2": round(y2, 1),
-            "cx": round(cx, 1),
-            "cy": round(cy, 1),
-            "offset_x": round(offset_x, 1),
-            "offset_y": round(offset_y, 1),
-            "horizontal": horizontal,
-            "vertical": vertical
-        })
+        targets.append(
+            {
+                "weed": i + 1,
+                "confidence": detection["confidence"],
+                "x1": round(x1, 1),
+                "y1": round(y1, 1),
+                "x2": round(x2, 1),
+                "y2": round(y2, 1),
+                "cx": round(cx, 1),
+                "cy": round(cy, 1),
+                "offset_x": round(offset_x, 1),
+                "offset_y": round(offset_y, 1),
+                "horizontal": horizontal,
+                "vertical": vertical,
+            }
+        )
 
     return targets
