@@ -1,7 +1,6 @@
-import torch
 import cv2
 import numpy as np
-
+import torch
 
 # =========================================================
 # LOAD MODEL ONCE
@@ -19,12 +18,7 @@ MODEL_PATH = os.path.join(
     "best.pt"
 )
 
-model = torch.hub.load(
-    ".",
-    "custom",
-    path=MODEL_PATH,
-    source="local"
-)
+model = torch.hub.load(".", "custom", path=MODEL_PATH, source="local")
 
 model.conf = 0.1
 model.iou = 0.45
@@ -34,15 +28,13 @@ model.iou = 0.45
 # DETECTION
 # =========================================================
 
+
 def detect_weeds(image):
-    """
-    Run YOLOv5 directly on a PIL image.
+    """Run YOLOv5 directly on a PIL image.
 
     Returns:
-        output_image
-        detections
+        output_image: detections
     """
-
     # -----------------------------------------------------
     # PIL -> NumPy
     # -----------------------------------------------------
@@ -52,15 +44,12 @@ def detect_weeds(image):
     # PIL image is RGB
     # YOLOv5 accepts RGB through the hub model,
     # so DO NOT convert to BGR here.
-    
+
     # -----------------------------------------------------
     # Run YOLO
     # -----------------------------------------------------
 
-    results = model(
-        image_np,
-        size=640
-    )
+    results = model(image_np, size=640)
 
     # -----------------------------------------------------
     # Get detections
@@ -69,7 +58,6 @@ def detect_weeds(image):
     detections = []
 
     for detection in results.xyxy[0]:
-
         x1 = float(detection[0])
         y1 = float(detection[1])
         x2 = float(detection[2])
@@ -78,14 +66,7 @@ def detect_weeds(image):
         confidence = float(detection[4])
         class_id = int(detection[5])
 
-        detections.append({
-            "class_id": class_id,
-            "confidence": confidence,
-            "x1": x1,
-            "y1": y1,
-            "x2": x2,
-            "y2": y2
-        })
+        detections.append({"class_id": class_id, "confidence": confidence, "x1": x1, "y1": y1, "x2": x2, "y2": y2})
 
     # -----------------------------------------------------
     # Create output image
@@ -98,7 +79,6 @@ def detect_weeds(image):
     # -----------------------------------------------------
 
     for detection in detections:
-
         x1 = int(detection["x1"])
         y1 = int(detection["y1"])
         x2 = int(detection["x2"])
@@ -107,25 +87,11 @@ def detect_weeds(image):
         confidence = detection["confidence"]
 
         # Bounding box
-        cv2.rectangle(
-            output_image,
-            (x1, y1),
-            (x2, y2),
-            (0, 255, 0),
-            3
-        )
+        cv2.rectangle(output_image, (x1, y1), (x2, y2), (0, 255, 0), 3)
 
         # Label
         label = f"Weed {confidence * 100:.1f}%"
 
-        cv2.putText(
-            output_image,
-            label,
-            (x1, max(y1 - 10, 20)),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.7,
-            (0, 255, 0),
-            2
-        )
+        cv2.putText(output_image, label, (x1, max(y1 - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
     return output_image, detections
