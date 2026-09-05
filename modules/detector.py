@@ -7,7 +7,17 @@ import numpy as np
 # LOAD MODEL ONCE
 # =========================================================
 
-MODEL_PATH = "../weights/yolov5n/best.pt"
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "..",
+    "weights",
+    "yolov5n",
+    "best.pt"
+)
 
 model = torch.hub.load(
     ".",
